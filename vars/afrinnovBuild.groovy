@@ -100,7 +100,7 @@ def call(Map pipelineParams){
                         }
                         if(currentBuild.changeSets.size() > 0) {
                             sh "chmod 777 deploy.sh"
-                            sh "sh deploy.sh ${pipelineParams.appName}_app ${pipelineParams.port} ${pipelineParams.profile}"
+                            sh "sh deploy.sh ${pipelineParams.appName} ${pipelineParams.port} ${pipelineParams.profile}"
                         } else {
                             echo 'No Execute deploy'
                         }
