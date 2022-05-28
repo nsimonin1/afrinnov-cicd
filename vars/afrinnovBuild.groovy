@@ -1,4 +1,4 @@
-def call(){
+def call(Map pipelineParams){
     def isMaster = env.BRANCH_NAME == 'master'
 
     pipeline {
@@ -13,7 +13,7 @@ def call(){
         stages{
             stage ("start") {
                 steps {
-                    echo "Starting... sysbio"
+                    echo "Starting... ${pipelineParams.appName}"
                 }
             }
             stage ("build"){
@@ -77,7 +77,7 @@ def call(){
                         if(currentBuild.changeSets.size() > 0) {
                             withCredentials([usernamePassword(credentialsId: REGISTRY_CREDENTIAL, usernameVariable: 'REGISTRY_USERNAME',
                                     passwordVariable: 'REGISTRY_PASSWORD')]) {
-                                sh "./mvnw -DskipTests -P dev jib:build"
+                                sh "./mvnw -DskipTests -P ${pipelineParams.profile} jib:build"
                             }
                         } else {
                             echo 'No Execute JIB'
@@ -100,7 +100,7 @@ def call(){
                         }
                         if(currentBuild.changeSets.size() > 0) {
                             sh "chmod 777 deploy.sh"
-                            sh "sh deploy.sh sysbio_app 58085 dev"
+                            sh "sh deploy.sh ${pipelineParams.appName}_app ${pipelineParams.port} ${pipelineParams.profile}"
                         } else {
                             echo 'No Execute deploy'
                         }
