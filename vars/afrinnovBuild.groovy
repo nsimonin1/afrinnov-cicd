@@ -27,7 +27,7 @@ def call(Map pipelineParams){
                             currentBuild.result = 'SUCCESS'
                         } else {
                             sh "chmod +x mvnw"
-                            sh "./mvnw -DskipTests clean package"
+                            sh "./mvnw -U -DskipTests clean package"
                             step([$class: 'JavadocArchiver', javadocDir: 'target/', keepAll: true])
                         }
                     }
