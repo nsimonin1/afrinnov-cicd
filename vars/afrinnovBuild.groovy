@@ -4,6 +4,10 @@ def call(Map pipelineParams){
     pipeline {
         agent any
 
+        tools {
+            jdk "${pipelineParams.selectedJdk}"
+        }
+
         environment {
             DOCKER_HUB_CREDS = credentials('docker-afrinnov-service-credentials')
             REGISTRY_CREDENTIAL = 'docker-afrinnov-service-credentials'
