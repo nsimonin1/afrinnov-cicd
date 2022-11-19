@@ -115,27 +115,30 @@ def call(Map pipelineParams){
             }*/
             stage("Release-manually") {
                 when {
-                    // triggeredBy cause : "UserIdCause"//, detail: "kevinlactiokemta";
-                    expression {
-                        // currentBuild.result == null || currentBuild.result == 'SUCCESS'
-                        currentBuild.buildCauses.toString().contains('UserIdCause')
+                    allOf {
+                        triggeredBy cause : "UserIdCause"//, detail: "kevinlactiokemta";
+                        expression {
+                            currentBuild.result == null || currentBuild.result == 'SUCCESS'
+                        }
                     }
                 }
 
                 steps {
-                    //def triggeredBy = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').userName
-                    /*if(currentBuild.changeSets.size() <= 0) {
-                        currentBuild.result = "SUCCESS"
-                        return
+                    script {
+                        def triggeredBy = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').userName
+                        if(currentBuild.changeSets.size() <= 0) {
+                            currentBuild.result = "SUCCESS"
+                            return
+                        }
+                        else if (currentBuild.changeSets.size() > 0) {
+                            sh "chmod 777 deploy.sh"
+                            sh "sh deploy.sh ${pipelineParams.appName} ${pipelineParams.port} ${pipelineParams.profile}"
+                            echo "The Release Stage is successfully executed by ${triggeredBy}!"
+                        }
+                        else {
+                            echo ':( No Execution for Release Stage!!'
+                        }
                     }
-                    else if (currentBuild.changeSets.size() > 0) {*/
-                        sh "chmod 777 deploy.sh"
-                        sh "sh deploy.sh ${pipelineParams.appName} ${pipelineParams.port} ${pipelineParams.profile}"
-                        echo "The Release Stage is successfully executed by ${triggeredBy}!"
-                    /*}
-                    else {
-                        echo ':( No Execution for Release Stage!!'
-                    }*/
                 }
             }
 
