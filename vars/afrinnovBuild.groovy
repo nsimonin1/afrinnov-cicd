@@ -120,15 +120,15 @@ def call(Map pipelineParams){
                     }
                 }
 
-                input {
-                    message "Ready to deploy?"
-                    ok 'Choice an Input'
-                    parameters {
-                        choice(name: 'MANUAL_TRIGGERING_ACTION', choices: ['DEPLOY','SKIP'], description: "Cliquez ici pour deployer manuellement")
-                    }
-                }
-
                 steps {
+
+                    input (
+                            message: "Ready to deploy?",
+                            ok: 'Deploy',
+                            submitter: "kevinlactiokemta,admin,admins",
+                            submitterParameter: "SUBMITTER_USERNAME"
+                    )
+
                     script {
 
                         def triggeredBy = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').userName
@@ -137,9 +137,7 @@ def call(Map pipelineParams){
                             return
                         }
                         else if (currentBuild.changeSets.size() > 0) {
-
-                            def action = "${MANUAL_TRIGGERING_RESPONSE}".toString()
-                            echo "Vous avec choisi : ${action}"
+                            echo "Vous avec choisi soumis"
 
                             // sh "chmod 777 deploy.sh"
                             // sh "sh deploy.sh ${pipelineParams.appName} ${pipelineParams.port} ${pipelineParams.profile}"
