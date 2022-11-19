@@ -122,8 +122,8 @@ def call(Map pipelineParams){
 
                 steps {
                     input {
-                        message: "Ready to deploy?"
-                        ok: 'Choice an Input'
+                        message "Ready to deploy?"
+                        ok 'Choice an Input'
                         parameters {
                             choice(name: 'MANUAL_TRIGGERING_ACTION', choices: ['DEPLOY','SKIP'], description: "Cliquez ici pour deployer manuellement")
                         }
