@@ -37,7 +37,7 @@ def call(Map pipelineParams){
                 }
             }
 
-            stage('TestUnitaire') {
+            /*stage('TestUnitaire') {
                 steps{
                     script {
                         if(currentBuild.changeSets.size() == 0) {
@@ -112,17 +112,20 @@ def call(Map pipelineParams){
                         }
                     }
                 }
-            }
+            }*/
             stage("Release-manually") {
                 when {
-                    triggeredBy cause : "userIdCause", detail: "kevinlactiokemta";
-                    expression {
-                        currentBuild.result == null || currentBuild.result == 'SUCCESS'
+                    allOf {
+                        triggeredBy cause : "UserIdCause"//, detail: "kevinlactiokemta";
+                        /*expression {
+                            currentBuild.result == null || currentBuild.result == 'SUCCESS'
+                        }*/
                     }
                 }
 
                 steps {
                     script {
+                        def triggeredBy = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').userName
                         if(currentBuild.changeSets.size() <= 0) {
                             currentBuild.result = "SUCCESS"
                             return
@@ -130,7 +133,7 @@ def call(Map pipelineParams){
                         else if (currentBuild.changeSets.size() > 0) {
                             sh "chmod 777 deploy.sh"
                             sh "sh deploy.sh ${pipelineParams.appName} ${pipelineParams.port} ${pipelineParams.profile}"
-                            echo ';) The Release Stage is successfully executed'
+                            echo "The Release Stage is successfully executed by ${triggeredBy}!"
                         }
                         else {
                             echo ':( No Execution for Release Stage!!'
