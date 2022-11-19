@@ -22,7 +22,7 @@ def call(Map pipelineParams){
                     echo "Starting... ${pipelineParams.appName}"
                 }
             }
-            stage ("build"){
+            /*stage ("build"){
                 steps{
                     script {
                         if(currentBuild.changeSets.size() == 0) {
@@ -37,7 +37,7 @@ def call(Map pipelineParams){
                 }
             }
 
-            /*stage('TestUnitaire') {
+            stage('TestUnitaire') {
                 steps{
                     script {
                         if(currentBuild.changeSets.size() == 0) {
@@ -131,8 +131,8 @@ def call(Map pipelineParams){
                             return
                         }
                         else if (currentBuild.changeSets.size() > 0) {
-                            sh "chmod 777 deploy.sh"
-                            sh "sh deploy.sh ${pipelineParams.appName} ${pipelineParams.port} ${pipelineParams.profile}"
+                            // sh "chmod 777 deploy.sh"
+                            // sh "sh deploy.sh ${pipelineParams.appName} ${pipelineParams.port} ${pipelineParams.profile}"
                             echo "The Release Stage is successfully executed by ${triggeredBy}!"
                         }
                         else {
