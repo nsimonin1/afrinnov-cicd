@@ -124,18 +124,18 @@ def call(Map pipelineParams){
 
                 steps {
                     def triggeredBy = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').userName
-                    if(currentBuild.changeSets.size() <= 0) {
+                    /*if(currentBuild.changeSets.size() <= 0) {
                         currentBuild.result = "SUCCESS"
                         return
                     }
-                    else if (currentBuild.changeSets.size() > 0) {
+                    else if (currentBuild.changeSets.size() > 0) {*/
                         sh "chmod 777 deploy.sh"
                         sh "sh deploy.sh ${pipelineParams.appName} ${pipelineParams.port} ${pipelineParams.profile}"
                         echo "The Release Stage is successfully executed by ${triggeredBy}!"
-                    }
+                    /*}
                     else {
                         echo ':( No Execution for Release Stage!!'
-                    }
+                    }*/
                 }
             }
 
