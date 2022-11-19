@@ -22,7 +22,7 @@ def call(Map pipelineParams){
                     echo "Starting... ${pipelineParams.appName}"
                 }
             }
-            stage ("build"){
+            /*stage ("build"){
                 steps{
                     script {
                         if(currentBuild.changeSets.size() == 0) {
@@ -37,7 +37,7 @@ def call(Map pipelineParams){
                 }
             }
 
-            /*stage('TestUnitaire') {
+            stage('TestUnitaire') {
                 steps{
                     script {
                         if(currentBuild.changeSets.size() == 0) {
@@ -90,75 +90,66 @@ def call(Map pipelineParams){
                         }
                     }
                 }
-            }*/
+            }
 
-            stage("deploy") {
-                parallel {
-                    stage("pre-release") {
-                        when {
-                            expression {
-                                currentBuild.result == null || currentBuild.result == 'SUCCESS'
-                            }
-                        }
-                        steps {
-                            script {
-                                if(currentBuild.changeSets.size() == 0) {
-                                    currentBuild.result = 'SUCCESS'
-                                    return
-                                }
-                                if(currentBuild.changeSets.size() > 0) {
-                                    sh "chmod 777 deploy.sh"
-                                    sh "sh deploy.sh ${pipelineParams.appName} ${pipelineParams.port} ${pipelineParams.profile}"
-                                } else {
-                                    echo 'No Execute deploy'
-                                }
-                            }
-                        }
+            stage("deploy-pre-release") {
+                when {
+                    expression {
+                        currentBuild.result == null || currentBuild.result == 'SUCCESS'
                     }
-                    stage("final-release") {
-                        when {
-                            allOf {
-                                triggeredBy cause : "UserIdCause"//, detail: "kevinlactiokemta";
-                                expression {
-                                    currentBuild.result == null || currentBuild.result == 'SUCCESS'
-                                }
-                            }
+                }
+                steps {
+                    script {
+                        if(currentBuild.changeSets.size() == 0) {
+                            currentBuild.result = 'SUCCESS'
+                            return
                         }
-
-                        steps {
-                            script {
-
-                                def triggeredBy = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').userName
-                                if(currentBuild.changeSets.size() <= 0) {
-                                    currentBuild.result = "SUCCESS"
-                                    return
-                                }
-                                else if (currentBuild.changeSets.size() > 0) {
-
-                                    values = ['Apple', 'Banana', 'Peach']
-                                    parameters = []
-                                    values.each {
-                                        echo it
-                                        parameters.add( [$class: 'BooleanParameterDefinition', defaultValue:
-                                                false, description: '', name: it ] )
-                                    }
-
-                                    res = input(
-                                            message: 'Was this successful?', parameters: parameters
-                                    )
-
-                                    sh "chmod 777 deploy.sh"
-                                    sh "sh deploy.sh ${pipelineParams.appName} ${pipelineParams.port} ${pipelineParams.profile}"
-                                    echo "The Release Stage is successfully executed by ${triggeredBy}!"
-                                }
-                                else {
-                                    echo ':( No Execution for Release Stage!!'
-                                }
-                            }
+                        if(currentBuild.changeSets.size() > 0) {
+                            sh "chmod 777 deploy.sh"
+                            sh "sh deploy.sh ${pipelineParams.appName} ${pipelineParams.port} ${pipelineParams.profile}"
+                        } else {
+                            echo 'No Execute deploy'
                         }
                     }
                 }
+            }*/
+            stage("deploy-final-release") {
+                when {
+                    expression {
+                        currentBuild.result == null || currentBuild.result == 'SUCCESS'
+                    }
+                }
 
+                steps {
+                    input {
+                        message: "Ready to deploy?"
+                        ok: 'Choice an Input'
+                        parameters {
+                            choice(name: 'MANUAL_TRIGGERING_ACTION', choices: ['DEPLOY','SKIP'], description: "Cliquez ici pour deployer manuellement")
+                        }
+                    }
+
+                    script {
+
+                        def triggeredBy = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').userName
+                        if(currentBuild.changeSets.size() <= 0) {
+                            currentBuild.result = "SUCCESS"
+                            return
+                        }
+                        else if (currentBuild.changeSets.size() > 0) {
+
+                            def action = "${MANUAL_TRIGGERING_RESPONSE}".toString()
+                            echo "Vous avec choisi : ${action}"
+
+                            // sh "chmod 777 deploy.sh"
+                            // sh "sh deploy.sh ${pipelineParams.appName} ${pipelineParams.port} ${pipelineParams.profile}"
+                            // echo "The Release Stage is successfully executed by ${triggeredBy}!"
+                        }
+                        else {
+                            echo ':( No Execution for Release Stage!!'
+                        }
+                    }
+                }
             }
 
         }
