@@ -120,15 +120,15 @@ def call(Map pipelineParams){
                     }
                 }
 
-                steps {
-                    input {
-                        message "Ready to deploy?"
-                        ok 'Choice an Input'
-                        parameters {
-                            choice(name: 'MANUAL_TRIGGERING_ACTION', choices: ['DEPLOY','SKIP'], description: "Cliquez ici pour deployer manuellement")
-                        }
+                input {
+                    message "Ready to deploy?"
+                    ok 'Choice an Input'
+                    parameters {
+                        choice(name: 'MANUAL_TRIGGERING_ACTION', choices: ['DEPLOY','SKIP'], description: "Cliquez ici pour deployer manuellement")
                     }
+                }
 
+                steps {
                     script {
 
                         def triggeredBy = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').userName
