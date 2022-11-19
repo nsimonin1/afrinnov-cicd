@@ -22,7 +22,7 @@ def call(Map pipelineParams){
                     echo "Starting... ${pipelineParams.appName}"
                 }
             }
-            /*stage ("build"){
+            stage ("build"){
                 steps{
                     script {
                         if(currentBuild.changeSets.size() == 0) {
@@ -92,7 +92,7 @@ def call(Map pipelineParams){
                 }
             }
 
-            stage("deploy-pre-release") {
+            stage("Deploy-pre-release") {
                 when {
                     expression {
                         currentBuild.result == null || currentBuild.result == 'SUCCESS'
@@ -112,36 +112,30 @@ def call(Map pipelineParams){
                         }
                     }
                 }
-            }*/
-            stage("deploy-final-release") {
+            }
+            stage("Deploy-final-release") {
                 when {
+                    triggeredBy cause : "UserIdCause" //, detail: "kevinlactiokemta";
                     expression {
                         currentBuild.result == null || currentBuild.result == 'SUCCESS'
                     }
                 }
 
                 steps {
-
                     input (
-                            message: "Ready to deploy?",
-                            ok: 'Deploy',
-                            submitter: "kevinlactiokemta,admin,admins",
-                            submitterParameter: "SUBMITTER_USERNAME"
-                    )
-
+                        message: "Ready to deploy?",
+                        ok: 'Yes deploy',
+                        submitterParameter: "SUBMITTER_USERNAME")
                     script {
-
                         def triggeredBy = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').userName
                         if(currentBuild.changeSets.size() <= 0) {
                             currentBuild.result = "SUCCESS"
                             return
                         }
                         else if (currentBuild.changeSets.size() > 0) {
-                            echo "Vous avec choisi soumis"
-
-                            // sh "chmod 777 deploy.sh"
-                            // sh "sh deploy.sh ${pipelineParams.appName} ${pipelineParams.port} ${pipelineParams.profile}"
-                            // echo "The Release Stage is successfully executed by ${triggeredBy}!"
+                            sh "chmod 777 deploy.sh"
+                            sh "sh deploy.sh ${pipelineParams.appName} ${pipelineParams.port} ${pipelineParams.profile}"
+                            echo "The Release Stage is successfully executed by ${triggeredBy}!"
                         }
                         else {
                             echo ':( No Execution for Release Stage!!'
