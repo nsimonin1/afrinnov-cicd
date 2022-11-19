@@ -123,7 +123,7 @@ def call(Map pipelineParams){
                 }
 
                 steps {
-                    def triggeredBy = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').userName
+                    //def triggeredBy = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').userName
                     /*if(currentBuild.changeSets.size() <= 0) {
                         currentBuild.result = "SUCCESS"
                         return
